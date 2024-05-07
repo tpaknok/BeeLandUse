@@ -1,7 +1,8 @@
-analysis.df.PD <- analysis.df.No.AM
+analysis.df.PD <- read.csv("Data/Alpha.csv")
 analysis.df.PD$LC.author.coarse <- relevel(factor(analysis.df.PD$LC.author.coarse,ordered=F),ref="Natural")
 
 ### Text S3
+library(geosphere)
 dist <- as.matrix(distm(cbind(analysis.df.PD$Long,analysis.df.PD$Lat)))
 study <- as.matrix(dist(as.numeric(as.factor(analysis.df.PD$studyID))))
 SR <- as.matrix(dist(analysis.df.PD$Exclude.AM.Est.Shannon))
@@ -33,10 +34,12 @@ for (i in 1:length(unique(analysis.df.PD$studyID))) {
 }
 
 mean(SAC_result,na.rm=T)
+max(SAC_result,na.rm=T)
 mean(SAC_coef,na.rm=T)
 
 ### Obj 1a spaMM
 library(spaMM)
+library(DHARMa)
 avail_thr <- parallel::detectCores(logical=FALSE) - 1L 
 mTD2 <- fitme(log10(Exclude.AM.Est.Shannon)~Agr1+Urb1+abundanceMethod+PC1+PC2+(Agr1+Urb1||studyID)+Matern(1|Long + Lat %in% studyID),data=analysis.df.PD,
               family=gaussian,weights.form=~SC,method="ML",verbose=c(TRACE=TRUE),control.dist=list(dist.method="Earth")
@@ -149,3 +152,4 @@ library(ggpubr)
 
 p_alpha <- ggarrange(pTD,pPD,pPD_C,nrow=1,ncol=3,common.legend=T,legend="bottom")
 ggsave("Figure/p_alpha.tiff",width=8,height=4,compression="lzw",dpi=600)
+

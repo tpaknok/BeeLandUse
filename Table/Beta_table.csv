@@ -1,0 +1,109 @@
+"","Estimate","Std. Error","df","t value","Pr(>|t|)"
+"(Intercept)",0.682,0.016,136.206,43.45,0
+"LCAgriculture",0.002,0.013,60.799,0.19,0.85
+"LCUrban",0.033,0.018,84.979,1.818,0.073
+"scaled.spatial.dist",0.029,0.009,130.22,3.174,0.002
+"SC.diff.mean",1.214,0.147,128.161,8.252,0
+"mean_PC1",0.011,0.006,106.064,1.898,0.06
+"mean_PC2",0,0.005,103.412,0.084,0.933
+"abundanceMethodVisitors (All)",0.026,0.016,112.087,1.605,0.111
+"abundanceMethodVisitors (Targeted)",-0.001,0.018,133.975,-0.057,0.955
+"LCAgriculture:scaled.spatial.dist",-0.02,0.012,53.918,-1.735,0.088
+"LCUrban:scaled.spatial.dist",-0.015,0.02,93.035,-0.772,0.442
+"(Intercept)",0.33,0.023,137.325,14.365,0
+"LCAgriculture",-0.062,0.019,76.149,-3.307,0.001
+"LCUrban",-0.001,0.026,97.923,-0.039,0.969
+"scaled.spatial.dist",0.026,0.013,132.705,1.941,0.054
+"SC.diff.mean",1.37,0.216,133.214,6.349,0
+"mean_PC1",0.008,0.009,117.524,0.867,0.388
+"mean_PC2",0.006,0.008,116.092,0.707,0.481
+"abundanceMethodVisitors (All)",0.037,0.024,121.648,1.552,0.123
+"abundanceMethodVisitors (Targeted)",0.001,0.026,135.738,0.045,0.964
+"LCAgriculture:scaled.spatial.dist",-0.006,0.017,69.396,-0.334,0.74
+"LCUrban:scaled.spatial.dist",-0.011,0.029,104.456,-0.368,0.714
+"(Intercept)",0.347,0.023,137.993,15.334,0
+"LCAgriculture",0.067,0.017,56.478,3.927,0
+"LCUrban",0.037,0.024,76.212,1.526,0.131
+"scaled.spatial.dist",0.003,0.013,129.142,0.228,0.82
+"SC.diff.mean",-0.116,0.214,137.104,-0.541,0.589
+"mean_PC1",0.004,0.009,114.739,0.469,0.64
+"mean_PC2",-0.005,0.008,115.1,-0.661,0.51
+"abundanceMethodVisitors (All)",-0.008,0.024,119.102,-0.332,0.741
+"abundanceMethodVisitors (Targeted)",-0.001,0.025,136.309,-0.045,0.964
+"LCAgriculture:scaled.spatial.dist",-0.018,0.015,51.344,-1.175,0.245
+"LCUrban:scaled.spatial.dist",-0.002,0.027,82.569,-0.071,0.943
+"(Intercept)",0.526,0.019,137.879,27.591,0
+"LCAgriculture",0.028,0.014,49.998,1.981,0.053
+"LCUrban",0.039,0.02,68.458,1.917,0.059
+"scaled.spatial.dist",0.013,0.011,127.892,1.211,0.228
+"SC.diff.mean",0.751,0.181,137.721,4.153,0
+"abundanceMethodVisitors (All)",0.027,0.021,117.391,1.304,0.195
+"abundanceMethodVisitors (Targeted)",0.027,0.022,136.502,1.234,0.219
+"mean_PC1",0.007,0.008,112.751,0.903,0.368
+"mean_PC2",0.002,0.007,113.532,0.317,0.752
+"LCAgriculture:scaled.spatial.dist",-0.024,0.012,45.427,-1.944,0.058
+"LCUrban:scaled.spatial.dist",-0.027,0.022,74.504,-1.203,0.233
+"(Intercept)",0.151,0.018,135.687,8.353,0
+"LCAgriculture",-0.042,0.015,78.489,-2.699,0.009
+"LCUrban",0.006,0.021,101.79,0.27,0.788
+"scaled.spatial.dist",0.004,0.011,133.822,0.36,0.719
+"SC.diff.mean",0.755,0.169,128.457,4.468,0
+"abundanceMethodVisitors (All)",0.035,0.019,118.586,1.856,0.066
+"abundanceMethodVisitors (Targeted)",0.035,0.02,134.975,1.713,0.089
+"mean_PC1",0.001,0.007,113.545,0.213,0.832
+"mean_PC2",0.007,0.006,110.369,1.097,0.275
+"LCAgriculture:scaled.spatial.dist",-0.004,0.014,70.914,-0.297,0.767
+"LCUrban:scaled.spatial.dist",-0.015,0.023,108.74,-0.629,0.531
+"(Intercept)",0.375,0.023,137.999,16.544,0
+"LCAgriculture",0.067,0.017,57.882,3.849,0
+"LCUrban",0.039,0.025,78.037,1.594,0.115
+"scaled.spatial.dist",0.006,0.013,129.329,0.471,0.639
+"SC.diff.mean",0.02,0.215,136.731,0.095,0.925
+"abundanceMethodVisitors (All)",-0.009,0.024,119.089,-0.353,0.725
+"abundanceMethodVisitors (Targeted)",-0.006,0.026,136.172,-0.228,0.82
+"mean_PC1",0.006,0.009,114.705,0.629,0.53
+"mean_PC2",-0.006,0.008,114.89,-0.696,0.488
+"LCAgriculture:scaled.spatial.dist",-0.017,0.015,52.564,-1.118,0.269
+"LCUrban:scaled.spatial.dist",-0.002,0.027,84.524,-0.055,0.956
+"(Intercept)",0.599,0.015,134.221,39.853,0
+"LCAgriculture",0.02,0.01,41.881,2.082,0.044
+"LCUrban",0.018,0.015,68.654,1.201,0.234
+"scaled.spatial.dist",-0.011,0.008,109.272,-1.39,0.167
+"SC.diff.mean",-0.25,0.156,130.066,-1.604,0.111
+"abundanceMethodVisitors (All)",0.001,0.015,116.371,0.093,0.926
+"abundanceMethodVisitors (Targeted)",0.03,0.015,134.551,1.917,0.057
+"scaled.T.beta",0.084,0.009,66.823,8.95,0
+"mean_PC1",-0.002,0.006,113.77,-0.28,0.78
+"mean_PC2",0.002,0.005,111.012,0.36,0.719
+"LCAgriculture:scaled.spatial.dist",-0.006,0.009,39.002,-0.652,0.518
+"LCUrban:scaled.spatial.dist",-0.007,0.016,55.574,-0.47,0.64
+"LCAgriculture:scaled.T.beta",-0.006,0.01,57.083,-0.556,0.581
+"LCUrban:scaled.T.beta",-0.026,0.015,65.584,-1.692,0.095
+"(Intercept)",0.181,0.014,134.282,13.344,0
+"LCAgriculture",-0.007,0.011,46.634,-0.682,0.499
+"LCUrban",0.003,0.015,72.283,0.189,0.851
+"scaled.spatial.dist",-0.01,0.008,114.235,-1.322,0.189
+"SC.diff.mean",-0.008,0.138,134.988,-0.058,0.954
+"abundanceMethodVisitors (All)",0.014,0.014,108.484,1.06,0.291
+"abundanceMethodVisitors (Targeted)",0.034,0.014,131.212,2.361,0.02
+"scaled.T.beta",0.076,0.009,94.735,8.227,0
+"mean_PC1",-0.004,0.005,102.077,-0.76,0.449
+"mean_PC2",0.004,0.004,97.619,0.885,0.378
+"LCAgriculture:scaled.spatial.dist",0,0.009,39.116,0.004,0.997
+"LCUrban:scaled.spatial.dist",-0.014,0.016,71.011,-0.86,0.393
+"LCAgriculture:scaled.T.beta",-0.009,0.011,66.015,-0.812,0.42
+"LCUrban:scaled.T.beta",0.008,0.014,70.444,0.546,0.587
+"(Intercept)",0.407,0.003,134.991,137.564,0
+"LCAgriculture",-0.001,0.002,57.442,-0.307,0.76
+"LCUrban",0.001,0.003,74.242,0.446,0.657
+"scaled.spatial.dist",0.003,0.002,125.013,2.092,0.038
+"SC.diff.mean",0.143,0.027,128.381,5.291,0
+"abundanceMethodVisitors (All)",-0.001,0.003,107.054,-0.246,0.806
+"abundanceMethodVisitors (Targeted)",-0.005,0.003,130.46,-1.425,0.157
+"scaled.T.beta",0.11,0.002,114.714,59.446,0
+"mean_PC1",0.002,0.001,99.469,1.478,0.143
+"mean_PC2",0,0.001,95.401,-0.278,0.781
+"LCAgriculture:scaled.spatial.dist",0,0.002,45.211,-0.132,0.896
+"LCUrban:scaled.spatial.dist",0.001,0.004,79.334,0.236,0.814
+"LCAgriculture:scaled.T.beta",-0.004,0.002,75.166,-1.88,0.064
+"LCUrban:scaled.T.beta",0,0.003,80.43,0.021,0.983

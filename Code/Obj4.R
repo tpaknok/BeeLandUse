@@ -1,6 +1,9 @@
-library(spaMM)
+library(phytools)
+library(sjmisc)
+library(BBmisc)
 response_df_full <- plot_df <- NULL
-sp.long.df <- read.csv("Data/genus_df,csv")
+sp.long.df <- read.csv("Data/genus.csv")
+tree <- read.tree("Data/Tree.tre")
 
 for (j in 1:length(unique(sp.long.df$species))) {
   newdata = NULL
@@ -108,7 +111,7 @@ for (j in 1:length(unique(sp.long.df$species))) {
     #predict(mod_genus,newdata=data.frame(Agriculture=c(0,1,PC1=0,PC2=0),re.form=NA)
     if (is.error(mod_genus)){
       message("error model")
-      response <- data.frame(Taxa = unique(sp.long.df$species)[[j]],
+      response <- data.frame(Taxa = unique(sp.long.df.subset$species)[[j]],
                              Int= NA,
                              Agr = NA, 
                              Urb = NA,
@@ -118,8 +121,8 @@ for (j in 1:length(unique(sp.long.df$species))) {
                              form = 5)
     } else {
       response <- data.frame(Taxa = unique(sp.long.df$species)[[j]],
-                             Mean = mean(sp.long.df$value),
-                             SD = sd(sp.long.df$value),
+                             Mean = mean(sp.long.df.subset$value),
+                             SD = sd(sp.long.df.subset$value),
                              Int = fixef(mod_genus)[[1]],
                              Agr=ifelse("Agriculture" %in% LC.available,fixef(mod_genus)[names(fixef(mod_genus)) == "Agriculture"],NA),
                              Urb=ifelse("Urban" %in% LC.available,fixef(mod_genus)[names(fixef(mod_genus)) == "Urban"],NA),
@@ -227,7 +230,7 @@ p_tree_agr <- ggtree(pruned.tree.agr,layout="circular",ladderize=T,size=1.2,hang
         plot.margin = unit(c(1,1,1,1), "cm"))
 
 plot(p_tree_agr)  
-ggsave("C:/Users/pakno/OneDrive - University of Toronto/GRF Bee/Figure/agr_tree.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
+ggsave("Figure/agr_tree.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
 
 pruned.tree.urb <- drop.tip(tree,tip=tree$tip.label[!tree$tip.label %in% urb_response_df$Taxa])
 urb_response_df$sig <- ifelse(urb_response_df$adjusted_p_urb < 0.05,"sig","insig")
@@ -261,7 +264,7 @@ p_tree_urb <- ggtree(pruned.tree.urb,layout="circular",ladderize=T,size=1.2) %<+
         legend.box.spacing= unit(0, 'cm'),
         plot.margin = unit(c(1,1,1,1), "cm"))
 plot(p_tree_urb)  
-ggsave("C:/Users/pakno/OneDrive - University of Toronto/GRF Bee/Figure/urb_tree.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
+ggsave("Figure/urb_tree.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
 
 library(ggpubr)
 
@@ -271,7 +274,7 @@ library(ggpubr)
 
 #ggsave("G:/My Drive/GRF Bee/Figure/tree.tiff",height=24,width=11,units="cm",compression="lzw",bg="white")
 
-write.csv(response_df,"C:/Users/pakno/OneDrive - University of Toronto/GRF Bee/Table/response_df.csv")
+write.csv(response_df,"Table/response_df.csv")
 ########correlation
 
 cor_df <- na.omit(agr_response_df)
@@ -282,38 +285,3 @@ cor_phylo(variates=~log_ratio_mean_urb+log_ratio_mean_agr,
           data=cor_df,
           phy=pruned_genus_tree,
           species=cor_df$Taxa)
-
-### not useful
-sig_genus <- na.omit(response_df$Taxa[response_df$adjusted_p_agr < 0.05 | response_df$adjusted_p_urb < 0.05])
-
-taxa_plot_df <- plot_df[plot_df$Taxa %in% sig_genus,]
-taxa_plot_df$LC <- factor(taxa_plot_df$LC, ordered=F) 
-taxa_plot_df$LC<-relevel(taxa_plot_df$LC, ref = "Natural")
-taxa_plot_df$sig <- NA
-taxa_plot_df$sig[taxa_plot_df$LC == "Urban"] <- "Insig"
-taxa_plot_df$sig[taxa_plot_df$LC == "Urban" & (taxa_plot_df$Taxa == "Hylaeus" | taxa_plot_df$Taxa == "Augochlorella" | taxa_plot_df$Taxa == "Osmia")] <- "Sig"
-taxa_plot_df$sig[taxa_plot_df$LC == "Agricultural"] <- "Insig"
-taxa_plot_df$sig[taxa_plot_df$LC == "Agricultural"& (taxa_plot_df$Taxa != "Hylaeus" | taxa_plot_df$Taxa != "Augochlorella")] <- "Sig"
-
-levels(taxa_plot_df$LC) <- c("Natural","Agricultural","Urban")
-library(ggplot2)
-
-p <- ggplot(data=taxa_plot_df,aes(y=percent_change, x= LC,colour=LC,group=Taxa))+
-  geom_hline(yintercept=0)+
-  geom_point(aes(shape=sig),size=3)+
-  geom_errorbar(aes(ymin=percent_low,ymax=percent_high),width=0.1)+
-  scale_colour_manual(values=c("green4","darkgoldenrod2","grey25"))+
-  scale_fill_manual(values=c("green4","darkgoldenrod2","grey25"))+
-  scale_shape_manual(values=c(4,19),na.value=19)+
-  facet_wrap(~Taxa,scales="free")+
-  ylab("Percent change")+
-  xlab("")+
-  guides(colour="none",shape="none")+
-  theme_classic()+
-  theme(legend.position="bottom")
-
-plot(p)
-
-ggsave("p_abundance.tiff",dpi=800,compression="lzw",width=16.8,height=16.8,units="cm")
-
-############################

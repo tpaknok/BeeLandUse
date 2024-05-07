@@ -17,7 +17,6 @@ p_alpha_corr <- ggplot(data=analysis.df.PD,aes(y=qPD.S,x=Exclude.AM.Est.Shannon)
 
 plot(p_alpha_corr)
 
-cor_df_Btotal <- data.frame(TBtotal=T_beta$mean.dist[T_beta$metrics == "Btotal"],PBtotal=P_beta$mean.dist[P_beta$metrics == "Btotal"])
 m_total_b <- lm(log10(PBtotal)~log10(TBtotal),data=cor_df_Btotal)
 summary(m_total_b)
 r2 = round(summary(m_total_b)$r.squared,2)
@@ -37,7 +36,7 @@ p_corr_Btotal <- ggplot(data=cor_df_Btotal,aes(y=PBtotal,x=TBtotal))+
   theme_classic()
 plot(p_corr_Btotal)
 
-cor_df_Brepl <- data.frame(TBrepl=T_beta$mean.dist[T_beta$metrics == "Brepl"],PBrepl=P_beta$mean.dist[P_beta$metrics == "Brepl"])
+cor_df_Brepl <- data.frame(TBrepl=P_beta$T_beta[P_beta$metrics == "Brepl"],PBrepl=P_beta$mean.dist[P_beta$metrics == "Brepl"])
 m_repl_b <- lm(log10(PBrepl)~log10(TBrepl),data=cor_df_Brepl)
 summary(m_repl_b)
 r2 = round(summary(m_repl_b)$r.squared,2)
@@ -56,7 +55,7 @@ p_corr_Brepl <- ggplot(data=cor_df_Brepl,aes(y=PBrepl,x=TBrepl))+geom_point()+
   theme_classic()
 plot(p_corr_Brepl)
 
-cor_df_Brich <- data.frame(TBrich=T_beta$mean.dist[T_beta$metrics == "Brich"],PBrich=P_beta$mean.dist[P_beta$metrics == "Brich"])
+cor_df_Brich <- data.frame(TBrich=P_beta$T_beta[P_beta$metrics == "Brich"],PBrich=P_beta$mean.dist[P_beta$metrics == "Brich"])
 m_rich_b <- lm(log10(PBrich)~log10(TBrich),data=cor_df_Brich)
 summary(m_rich_b)
 r2 = round(summary(m_rich_b)$r.squared,2)

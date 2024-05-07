@@ -1,0 +1,25 @@
+"","Estimate","Cond. SE","t-value","p-value"
+"(Intercept)",1.021,0.034,30.194,0
+"Agr1",-0.077,0.025,-3.145,0.002
+"Urb1",-0.078,0.03,-2.555,0.011
+"abundanceMethodVisitors (All)",-0.102,0.058,-1.768,0.077
+"abundanceMethodVisitors (Targeted)",-0.221,0.055,-4.035,0
+"PC1",0.038,0.018,2.132,0.033
+"PC2",0.027,0.016,1.738,0.082
+"(Intercept)1",0.469,0.02,23.832,0
+"Agr11",-0.055,0.016,-3.351,0.001
+"Urb11",-0.047,0.02,-2.357,0.019
+"abundanceMethodVisitors (All)1",-0.02,0.033,-0.61,0.542
+"abundanceMethodVisitors (Targeted)1",-0.091,0.033,-2.797,0.005
+"PC11",0.014,0.011,1.351,0.177
+"PC21",0.014,0.009,1.481,0.139
+"(Intercept)2",0.004,0.039,0.116,0.908
+"Agr12",0,0.041,-0.009,0.993
+"Covariate.Est.Shannon",1.073,0.039,27.341,0
+"Urb12",-0.04,0.056,-0.717,0.473
+"abundanceMethodVisitors (All)2",0.04,0.046,0.886,0.375
+"abundanceMethodVisitors (Targeted)2",0.03,0.042,0.712,0.476
+"PC12",0.006,0.014,0.445,0.656
+"PC22",0.014,0.013,1.107,0.268
+"Agr1:Covariate.Est.Shannon",-0.038,0.048,-0.789,0.43
+"Covariate.Est.Shannon:Urb1",0.028,0.056,0.499,0.618
