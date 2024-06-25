@@ -3,7 +3,7 @@ library(sjmisc)
 library(BBmisc)
 response_df_full <- plot_df <- NULL
 sp.long.df <- read.csv("Data/genus.csv")
-tree <- read.tree("Data/Tree.tre")
+genustree <- read.tree("Data/Tree.tre")
 
 for (j in 1:length(unique(sp.long.df$species))) {
   newdata = NULL
@@ -15,10 +15,10 @@ for (j in 1:length(unique(sp.long.df$species))) {
 
   sp.long.df.subset <- sp.long.df.subset[!sp.long.df.subset$studyID %in% remove_study,]
   tl_abundance <- aggregate(orig_value~studyID,data=sp.long.df.subset,FUN=sum)
-  tl_abundance <- tl_abundance[tl_abundance$orig_value >= 10, ]
+  tl_abundance <- tl_abundance[tl_abundance$orig_value >= 10, ] #first filter: remove studies with total abundance < 10 across habitats
   
   if(nrow(tl_abundance) < 5) {
-    message("no study available")
+    message("no study available") #fewer than five studies = stop
     next
   }
   unique.study <- unique(sp.long.df.subset$studyID)
@@ -28,7 +28,7 @@ for (j in 1:length(unique(sp.long.df$species))) {
   
   LC.available <- c(length(unique.study.nat),length(unique.study.agr),length(unique.study.urb))
   names(LC.available) <- c("Natural","Agriculture","Urban")
-  LC.available <- LC.available[LC.available >= 5]
+  LC.available <- LC.available[LC.available >= 5] #find land use with more than 5 studies
   
   if (length(LC.available) <= 1 | (!("Natural" %in% names(LC.available))) | length(unique.study) < 5) {
     message("Genus ",unique(sp.long.df$species)[[j]]," not analyzed")
@@ -39,8 +39,8 @@ for (j in 1:length(unique(sp.long.df$species))) {
                            Agr_p = NA,
                            Urb_p = NA,
                            Time = NA,
-                           form = 4)
-    form=4
+                           form = 4) #stop if one of the three conditions were met (only one LC, natural is not available, number of unique study < 5)
+    form <- 4
   } else {
     Natural.pos <- which(names(LC.available) == "Natural")
     
@@ -55,18 +55,18 @@ for (j in 1:length(unique(sp.long.df$species))) {
     
     if (length(unique(sp.long.df.subset$abundanceMethod)) > 1) {
       formula <- paste0("value~",RHS,"+abundanceMethod+PC1+PC2+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)")
+      null_formula_r2m <- paste0(".~1+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)")
+      null_formula_r2c <- paste0(".~1+offset(log(SamplingEffort))")
       form = 1
     } 
     
     if (length(unique(sp.long.df.subset$abundanceMethod)) == 1) {
-      formula <- paste0("value~",RHS,"+PC1+PC2+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)")
+      formula <- paste0("value~",RHS,"+PC1+PC2+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)") #note the use of offset here. so original abundance is the response
+      null_formula_r2m <- paste0(".~1+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)")
+      null_formula_r2c <- paste0(".~1+offset(log(SamplingEffort))")
       form = 2
     }
     
-    #if (length(unique(sp.long.df.subset$abundanceMethod)) == 1 & length(unique.study) == 1) {
-    #formula <- paste0("value~",RHS,"+PC1+PC2+(",RHS,"||studyID)+Matern(1|Long+Lat)")
-    #form=3
-    #}
     sp.long.df.subset$PC1 <- scale(sp.long.df.subset$PC1)
     sp.long.df.subset$PC2 <- scale(sp.long.df.subset$PC2)
     
@@ -88,11 +88,6 @@ for (j in 1:length(unique(sp.long.df$species))) {
     
     newdata <- cbind(newdata,get_intervals(object=mod_genus,newdata=newdata,level=0.95,re.form=NA,type="link"),get_intervals(object=mod_genus,newdata=newdata,level=0.68,re.form=NA,type="link"))
     newdata$indicator <- 0
-    #newdata[,c("predicted_y","predVar_0.025","predVar_0.975")] <- 10^newdata[,c("predicted_y","predVar_0.025","predVar_0.975")]-const
-    #if (length(which(newdata[,c("predicted_y","predVar_0.025","predVar_0.975")] < 0)) > 0) {
-    # newdata[,c("predicted_y","predVar_0.025","predVar_0.975")][newdata[,c("predicted_y","predVar_0.025","predVar_0.975")] < 0] <- 0
-    #newdata$indicator <- 1
-    #}
     newdata$LC <- c("Natural",unique(LC.available))
     natural_ref <- c(newdata[newdata$LC == "Natural","predicted_y"])
     newdata$ratio_mean <- newdata$predicted_y/natural_ref
@@ -105,10 +100,10 @@ for (j in 1:length(unique(sp.long.df$species))) {
     newdata$Taxa = unique(sp.long.df$species)[[j]]
     
     plot_df <- rbind(plot_df,newdata)
-    #newX <- expand.grid(unique(sp.long.df.subset$abundanceMethod),unique(sp.long.df.subset$Agriculture),unique(sp.long.df.subset$Urban))
-    #newX <- newX[!(newX$Var2 == 1 & newX$Var3 == 1),]
-    #newX <- cbind(newX,mean(sp.long.df.subset$m))
-    #predict(mod_genus,newdata=data.frame(Agriculture=c(0,1,PC1=0,PC2=0),re.form=NA)
+    
+    mgenus_R2c <- pseudoR2(mod_genus,as.formula(null_formula_r2c))
+    mgenus_R2m <- pseudoR2(mod_genus,as.formula(null_formula_r2m))
+    
     if (is.error(mod_genus)){
       message("error model")
       response <- data.frame(Taxa = unique(sp.long.df.subset$species)[[j]],
@@ -118,6 +113,8 @@ for (j in 1:length(unique(sp.long.df$species))) {
                              Agr_p = NA,
                              Urb_p = NA,
                              Time = NA,
+                             R2m = NA,
+                             R2c = NA,
                              form = 5)
     } else {
       response <- data.frame(Taxa = unique(sp.long.df$species)[[j]],
@@ -131,6 +128,8 @@ for (j in 1:length(unique(sp.long.df$species))) {
                              Agr_p=ifelse("Agriculture" %in% LC.available,b_table[rownames(b_table) == "Agriculture","p-value"],NA),
                              Urb_p=ifelse("Urban" %in% LC.available,b_table[rownames(b_table) == "Urban","p-value"],NA),
                              Time = as.numeric(end-start),
+                             R2m = mgenus_R2m,
+                             R2c = mgenus_R2c,
                              form = form)
     }
     
@@ -161,25 +160,19 @@ tree <- genus_tree
 
 pruned.tree.agr <- drop.tip(tree,tip=tree$tip.label[!tree$tip.label %in% agr_response_df$Taxa])
 agr <- agr_response_df$log_ratio_mean_agr
-agr_se <- agr_response_df$ratio_propoagated_se_agr
-names(agr) <- names(agr_se) <- agr_response_df$Taxa
+names(agr) <-  agr_response_df$Taxa
 phylosig(pruned.tree.agr,agr,method="lambda",test=T) #doesn't converge with se...very different results across runs
 
 urb_response_df <- response_df[!is.na(response_df$Urb),]
 
 pruned.tree.urb <- drop.tip(tree,tip=tree$tip.label[!tree$tip.label %in% urb_response_df$Taxa])
 urb <- urb_response_df$log_ratio_mean_urb
-urb_se <- urb_response_df$ratio_propoagated_se_urb
 
-names(urb) <- names(urb_se) <- urb_response_df$Taxa
+names(urb) <- urb_response_df$Taxa
 
 phylosig(pruned.tree.urb,urb,method="lambda",test=T) #doesn't converge with se...very different results across runs
 
-library(geiger)
-urb_lambda <- fitContinuous(pruned.tree.urb,urb,SE=urb_se,model=c("lambda")) #geiger approach
-agr_lambda <- fitContinuous(pruned.tree.agr,agr,SE=agr_se,model=c("lambda")) #geiger approach
-
-agr_response_df$adjusted_p <- p.adjust( agr_response_df$Agr_p,"fdr")
+agr_response_df$adjusted_p <- p.adjust(agr_response_df$Agr_p,"fdr")
 urb_response_df$adjusted_p <- p.adjust(urb_response_df$Urb_p,"fdr")
 
 genus_agr <- agr_response_df
@@ -215,6 +208,9 @@ pruned.tree.agr <- full_join(pruned.tree.agr, d, by = 'node')
 
 sig <- rep("insig",nrow(pruned.tree.agr@data))
 sig[which(pruned.tree.agr@phylo$tip.label %in% subset(agr_response_df,sig=="sig")$Taxa)] <- "sig"
+sig[sig=="sig" & pruned.tree.agr@data$trait <1] <- "neg"
+sig[sig=="sig" & pruned.tree.agr@data$trait >1] <- "pos"
+
 pruned.tree.agr@data$sig <- sig
 
 p_tree_agr <- ggtree(pruned.tree.agr,layout="circular",ladderize=T,size=1.2,hang=0.1) %<+% agr_response_df_tree+
@@ -222,7 +218,7 @@ p_tree_agr <- ggtree(pruned.tree.agr,layout="circular",ladderize=T,size=1.2,hang
   scale_color_gradient2(high="#ca0020",mid="#ffffbf",low="#0571b0",trans="log10",breaks=c(0.1,0.3,1,3),midpoint=0,limits=c(0.06,6.6),name=expression(paste("Ratio (Agricultural or Urban / Natural)")))+
   new_scale_color()+
   geom_tiplab(aes(colour=sig),fontface=3,align=T,linetype=NA, hjust = -0.05 ,show.legend=F,size=2.8)+
-  scale_color_manual(values=c("black","red"))+
+  scale_color_manual(values=c("black","#0571b0","#ca0020"))+
   theme(legend.text = element_text(size = 6), 
         legend.title = element_text(size =8), 
         legend.key.size = unit(0.35, 'cm'),legend.position="none",
@@ -248,6 +244,9 @@ pruned.tree.urb <- full_join(pruned.tree.urb, d, by = 'node')
 
 sig <- rep("insig",nrow(pruned.tree.urb@data))
 sig[which(pruned.tree.urb@phylo$tip.label %in% subset(urb_response_df,sig=="sig")$Taxa)] <- "sig"
+sig[sig=="sig" & pruned.tree.urb@data$trait <1] <- "neg"
+sig[sig=="sig" & pruned.tree.urb@data$trait >1] <- "pos"
+
 pruned.tree.urb@data$sig <- sig
 #aes(label=paste0("italic(",label,")")),parse=T,
 
@@ -256,7 +255,7 @@ p_tree_urb <- ggtree(pruned.tree.urb,layout="circular",ladderize=T,size=1.2) %<+
   scale_color_gradient2(high="#ca0020",mid="#ffffbf",low="#0571b0",trans="log10",breaks=c(0.1,0.3,1,3),limits=c(0.07,6.5),name=expression(paste("Ratio (Agricultural or Urban / Natural)")))+
   new_scale_color()+
   geom_tiplab(aes(colour=sig),fontface=3,align=T,linetype=NA, hjust = -0.05 ,show.legend=F,size=2.8)+
-  scale_color_manual(values=c("black","red"))+
+  scale_color_manual(values=c("black","#0571b0","#ca0020"))+
   theme(legend.text = element_text(size = 8), 
         legend.title = element_text(size = 8), 
         legend.key.size = unit(0.5, 'cm'),
