@@ -4,7 +4,7 @@ library(lmerTest)
 library(lme4)
 library(ggeffects)
 library(performance)
-#P_beta <- read.csv("Data/Beta.csv")
+P_beta <- read.csv("Data/cleaned_Beta.csv")
 all_results_reg <- all_graph_df <- all_table <- NULL
 beta.metrics <- c("Btotal","Bturn","Bab")
 result_reg <- graph_df<-NULL
@@ -31,11 +31,11 @@ for (i in 1:3) {
       m <- lmer(T_beta~LC*scaled.spatial.dist+SC.diff.mean+mean_PC1+mean_PC2+abundanceMethod+(1|study),data=subset.beta)
     }
     if (i == 2) {
-      m <- lmer(mean.dist~LC*scaled.spatial.dist+SC.diff.mean+abundanceMethod+mean_PC1+mean_PC2+(1|study),data=subset.beta)
+      m <- lmer(P_beta~LC*scaled.spatial.dist+SC.diff.mean+abundanceMethod+mean_PC1+mean_PC2+(1|study),data=subset.beta)
     }
     if (i==3){
       subset.beta$scaled.T.beta <- scale(subset.beta$T_beta)
-      m <- lmer(mean.dist~LC*scaled.spatial.dist+LC*scaled.T.beta+SC.diff.mean+abundanceMethod++mean_PC1+mean_PC2+(1|study),data=subset.beta)
+      m <- lmer(P_beta~LC*scaled.spatial.dist+LC*scaled.T.beta+SC.diff.mean+abundanceMethod++mean_PC1+mean_PC2+(1|study),data=subset.beta)
       
       y_lab_corr <- ifelse(j==1,expression(Phylogenetic~beta[total]),ifelse(j==2,expression(Phylogenetic~beta[turn]),expression(Phylogenetic~beta[ab])))
       x_lab_corr <- ifelse(j==1,expression(Taxonomic~beta[total]),ifelse(j==2,expression(Taxonomic~beta[turn]),expression(Taxonomic~beta[ab])))
@@ -171,9 +171,9 @@ ggsave("Figure/p_beta.tiff",dpi=600,compression="lzw",width=16.8,height=16.8,uni
 
 
 ### Proportion
-cor_df_Btotal <- data.frame(TBtotal=P_beta$T_beta[P_beta$metrics == "Btotal"],PBtotal=P_beta$mean.dist[P_beta$metrics == "Btotal"])
-cor_df_Bturn <- data.frame(TBturn=P_beta$T_beta[P_beta$metrics == "Bturn"],PBturn=P_beta$mean.dist[P_beta$metrics == "Bturn"])
-cor_df_Bab <- data.frame(TBab=P_beta$T_beta[P_beta$metrics == "Bab"],PBab=P_beta$mean.dist[P_beta$metrics == "Bab"])
+cor_df_Btotal <- data.frame(TBtotal=P_beta$T_beta[P_beta$metrics == "Btotal"],PBtotal=P_beta$P_beta[P_beta$metrics == "Btotal"])
+cor_df_Bturn <- data.frame(TBturn=P_beta$T_beta[P_beta$metrics == "Bturn"],PBturn=P_beta$P_beta[P_beta$metrics == "Bturn"])
+cor_df_Bab <- data.frame(TBab=P_beta$T_beta[P_beta$metrics == "Bab"],PBab=P_beta$P_beta[P_beta$metrics == "Bab"])
 
 prop_df <- cbind(cor_df_Bab,cor_df_Bturn,cor_df_Btotal,LC=subset.beta$LC,study=subset.beta$study,scaled.spatial.dist=subset.beta$scaled.spatial.dist,SC.diff.mean=subset.beta$SC.diff.mean,abundanceMethod=subset.beta$abundanceMethod,mean_PC1=subset.beta$mean_PC1,mean_PC2=subset.beta$mean_PC2)
 prop_df$Tprop <- prop_df$TBturn/prop_df$TBtotal

@@ -1,6 +1,5 @@
-#analysis.df.PD <- read.csv("Data/Alpha.csv")
-setwd("C:/Users/pakno/OneDrive - University of Toronto/GRF Bee")
-analysis.df.PD$LC.author.coarse <- relevel(factor(analysis.df.PD$LC.author.coarse,ordered=F),ref="Natural")
+#analysis.df.PD <- read.csv("Data/Alpha.csv") original file 
+analysis.df.PD <- read.csv("Data/cleaned_Alpha.csv")
 
 ### Text S3
 library(geosphere)

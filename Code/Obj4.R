@@ -2,20 +2,20 @@ library(phytools)
 library(sjmisc)
 library(BBmisc)
 response_df_full <- plot_df <- NULL
-sp.long.df <- read.csv("Data/genus.csv")
+sp.long.df <- read.csv("Data/cleaned_genus.csv")
 genustree <- read.tree("Data/Tree.tre")
 
-for (j in 1:length(unique(sp.long.df$species))) {
+for (j in 1:length(unique(sp.long.df$genus))) {
   newdata = NULL
-  message(j,"/",length(unique(sp.long.df$species)),unique(sp.long.df$species)[[j]])
+  message(j,"/",length(unique(sp.long.df$genus)),unique(sp.long.df$genus)[[j]])
   
-  sp.long.df.subset <- subset(sp.long.df,species == unique(sp.long.df$species)[[j]])
+  sp.long.df.subset <- subset(sp.long.df,genus == unique(sp.long.df$genus)[[j]])
   remove_study <- names(which(by(paste0(sp.long.df.subset$Long,"_",sp.long.df.subset$Lat),sp.long.df.subset$studyID,function(x) length(unique(x))) == 1))
   const <- 1
 
   sp.long.df.subset <- sp.long.df.subset[!sp.long.df.subset$studyID %in% remove_study,]
-  tl_abundance <- aggregate(orig_value~studyID,data=sp.long.df.subset,FUN=sum)
-  tl_abundance <- tl_abundance[tl_abundance$orig_value >= 10, ] #first filter: remove studies with total abundance < 10 across habitats
+  tl_abundance <- aggregate(abundance~studyID,data=sp.long.df.subset,FUN=sum)
+  tl_abundance <- tl_abundance[tl_abundance$abundance >= 10, ] #first filter: remove studies with total abundance < 10 across habitats
   
   if(nrow(tl_abundance) < 5) {
     message("no study available") #fewer than five studies = stop
@@ -31,8 +31,8 @@ for (j in 1:length(unique(sp.long.df$species))) {
   LC.available <- LC.available[LC.available >= 5] #find land use with more than 5 studies
   
   if (length(LC.available) <= 1 | (!("Natural" %in% names(LC.available))) | length(unique.study) < 5) {
-    message("Genus ",unique(sp.long.df$species)[[j]]," not analyzed")
-    response <- data.frame(Taxa = unique(sp.long.df$species)[[j]],
+    message("Genus ",unique(sp.long.df$genus)[[j]]," not analyzed")
+    response <- data.frame(Taxa = unique(sp.long.df$genus)[[j]],
                            Int= NA,
                            Agr = NA, 
                            Urb = NA,
@@ -54,14 +54,14 @@ for (j in 1:length(unique(sp.long.df$species))) {
     RHS <- paste(LC.available,collapse="+")
     
     if (length(unique(sp.long.df.subset$abundanceMethod)) > 1) {
-      formula <- paste0("value~",RHS,"+abundanceMethod+PC1+PC2+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)")
+      formula <- paste0("abundance~",RHS,"+abundanceMethod+PC1+PC2+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)")
       null_formula_r2m <- paste0(".~1+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)")
       null_formula_r2c <- paste0(".~1+offset(log(SamplingEffort))")
       form = 1
     } 
     
     if (length(unique(sp.long.df.subset$abundanceMethod)) == 1) {
-      formula <- paste0("value~",RHS,"+PC1+PC2+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)") #note the use of offset here. so original abundance is the response
+      formula <- paste0("abundance~",RHS,"+PC1+PC2+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)") #note the use of offset here. so original abundance is the response
       null_formula_r2m <- paste0(".~1+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)")
       null_formula_r2c <- paste0(".~1+offset(log(SamplingEffort))")
       form = 2
@@ -97,7 +97,7 @@ for (j in 1:length(unique(sp.long.df$species))) {
     newdata$ratio_low <- newdata$predVar_0.025/natural_ref
     newdata$ratio_high <- newdata$predVar_0.975/natural_ref
     
-    newdata$Taxa = unique(sp.long.df$species)[[j]]
+    newdata$Taxa = unique(sp.long.df$genus)[[j]]
     
     plot_df <- rbind(plot_df,newdata)
     
@@ -106,7 +106,7 @@ for (j in 1:length(unique(sp.long.df$species))) {
     
     if (is.error(mod_genus)){
       message("error model")
-      response <- data.frame(Taxa = unique(sp.long.df.subset$species)[[j]],
+      response <- data.frame(Taxa = unique(sp.long.df.subset$genus)[[j]],
                              Int= NA,
                              Agr = NA, 
                              Urb = NA,
@@ -117,9 +117,9 @@ for (j in 1:length(unique(sp.long.df$species))) {
                              R2c = NA,
                              form = 5)
     } else {
-      response <- data.frame(Taxa = unique(sp.long.df$species)[[j]],
-                             Mean = mean(sp.long.df.subset$value),
-                             SD = sd(sp.long.df.subset$value),
+      response <- data.frame(Taxa = unique(sp.long.df$genus)[[j]],
+                             Mean = mean(sp.long.df.subset$abundance),
+                             SD = sd(sp.long.df.subset$abundance),
                              Int = fixef(mod_genus)[[1]],
                              Agr=ifelse("Agriculture" %in% LC.available,fixef(mod_genus)[names(fixef(mod_genus)) == "Agriculture"],NA),
                              Urb=ifelse("Urban" %in% LC.available,fixef(mod_genus)[names(fixef(mod_genus)) == "Urban"],NA),
@@ -283,4 +283,4 @@ library(phyr)
 cor_phylo(variates=~log_ratio_mean_urb+log_ratio_mean_agr,
           data=cor_df,
           phy=pruned_genus_tree,
-          species=cor_df$Taxa)
+          genus=cor_df$Taxa)
