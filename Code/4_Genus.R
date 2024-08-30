@@ -2,7 +2,7 @@ library(tidyverse)
 library(BBmisc)
 library(reshape2)
 library(ape)
-source("C:/Users/pakno/OneDrive - University of Toronto/GRF Bee/GRF_Formal_Toby/Formal analyses_useful code/get_R2.R")
+source("Code/get_R2.R")
 
 genustree <- read.tree("Data/Tree.tre")
 sp.long.df <- read.csv("Data/Cleaned_Genus.csv")
