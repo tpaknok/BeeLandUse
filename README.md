@@ -18,17 +18,18 @@ cleaned_genus.csv
 In the code folder, there are 5 scripts. Please run the scripts in
 numerical order
 
-| Script | Description                                                                      |
-|--------|----------------------------------------------------------------------------------|
-| Obj1a  | Alpha diversity analyses                                                         |
-| Obj1b  | Beta diversity analyses                                                          |
-| Obj2   | Analyzing the scaling relationships between taxonomic and phylogenetic diversity |
-| Obj4   | Genus analyses                                                                   |
-| sim    | Simulations about mixed models (Text S2)                                         |
+| Script            | Description                                                                 |
+|-------------------|-----------------------------------------------------------------------------|
+| 1_Alpha           | Alpha diversity analyses                                                    |
+| 2_Beta_and_Gamma  | Beta and gamma diversity analyses                                           |
+| 3_Diversity_graph | Making graphs presenting diversity changes across land uses (Fig.1 and 2)   |
+| 4_Genus           | Genus analyses (including graphs)                                           |
+| sim               | Simulations about mixed models (Text S2)                                    |
+| get_R2            | get R2 from spaMM . Based on the r2() function in the R package performance |
 
 ## Alpha diversity analyses
 
-Please use the cleaned_alpha.csv for these analyses.
+Please use the Cleaned_alpha.csv for these analyses.
 
 | Variable               | Description                                                |
 |------------------------|------------------------------------------------------------|
@@ -38,33 +39,41 @@ Please use the cleaned_alpha.csv for these analyses.
 | Exclude.AM.Est.Shannon | Estimated Shannon diversity after excluding Apis mellifera |
 | qPD.S                  | Estimated phylogenetic diversity when q (Hill number) = 1  |
 | Agr1                   | Agricultural site = 1, non-agricultural site = 0           |
+| LC.authoro.corase      | Land use classified based on authors’ descriptions         |
+| Nat1                   | Natural site = 1, non-natural site = 0                     |
+| Agr1                   | Agricultural site = 1, non-agricultural site = 0           |
 | Urb1                   | Urban site = 1, non-urban site = 0                         |
 | abundanceMethod        | Sampling methods                                           |
 | PC1                    | Climatic PC1 score                                         |
 | PC2                    | Climatic PC2 score                                         |
 | SC                     | Sampling completeness                                      |
 
-## Beta diversity analyses
+## Beta and gamma diversity analyses
 
-Please use the cleaned_beta.csv for these analyses.
+Please use the Cleaned_beta.csv for these analyses. Note that beta
+diversity is computed in the script (Gamma/Alpha).
 
-| Variable          | Description                                                          |
-|-------------------|----------------------------------------------------------------------|
-| study             | Study identity                                                       |
-| T_beta            | Taxonomic beta diversity                                             |
-| P_beta            | Phylogenetic beta diversity                                          |
-| metrics           | Btotal (Total beta), Bab (abundance difference), or Bturn (turnover) |
-| LC                | Land use (Natural/Agricultural/Urban)                                |
-| mean.spatial.dist | Mean spatial distance                                                |
-| SC.diff.mean      | Mean sampling completeness differences between assemblages           |
-| abundanceMethod   | Sampling methods                                                     |
-| mean_PC1          | Mean climatic PC1 score                                              |
-| mean_PC2          | Mean climatic PC2 score                                              |
-| site              | The number of site in the study                                      |
+| Variable          | Description                                                |
+|-------------------|------------------------------------------------------------|
+| study             | Study identity                                             |
+| T.gamma           | Taxonomic gamma diversity                                  |
+| T.gamma.SC        | Phylogenetic gamma diversity                               |
+| P.gamma           | Phylogenetic gamma diversity                               |
+| LC                | Land use (Natural/Agricultural/Urban)                      |
+| extent            | Study extent                                               |
+| abundanceMethod   | Sampling methods                                           |
+| mean_PC1          | Mean climatic PC1 score                                    |
+| mean_PC2          | Mean climatic PC2 score                                    |
+| SamplingEffort.sd | Standard deviation in sampling efforts within each study   |
+| SC.sd             | Sampling completeness standard deviation                   |
+| mean_SC           | mean sampling completeness                                 |
+| site              | The number of assemblage(or site) in the study             |
+| mean_T_alpha      | average rarefied taxonomic alpha diversity in the study    |
+| mean_P_alpha      | average rarefied phylogenetic alpha diversity in the study |
 
 ## genus analyses
 
-Please use the genus.csv for these analyses.
+Please use the Cleaned_genus.csv for these analyses.
 
 | Variable         | Description                                      |
 |------------------|--------------------------------------------------|
@@ -80,3 +89,4 @@ Please use the genus.csv for these analyses.
 | PC1              | Climatic PC1 score                               |
 | PC2              | Climatic PC2 score                               |
 | LC.author.coarse | Land use change (single column                   |
+| orig.value       | same as abundance value                          |
