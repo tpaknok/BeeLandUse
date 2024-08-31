@@ -237,7 +237,7 @@ p_tree_agr <- ggtree(pruned.tree.agr,layout="circular",ladderize=T,size=1.2,hang
         plot.margin = unit(c(1,1,1,1), "cm"))
 
 plot(p_tree_agr)  
-ggsave("C:/Users/pakno/OneDrive - University of Toronto/GRF Bee/Figure/agr_tree.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
+ggsave("Figure/agr_tree.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
 
 pruned.tree.urb <- drop.tip(tree,tip=tree$tip.label[!tree$tip.label %in% urb_response_df$Taxa])
 urb_response_df$sig <- ifelse(urb_response_df$adjusted_p_urb < 0.05,"sig","insig")
@@ -272,11 +272,11 @@ p_tree_urb <- ggtree(pruned.tree.urb,layout="circular",ladderize=T,size=1.2) %<+
         legend.box.spacing= unit(0, 'cm'),
         plot.margin = unit(c(1,1,1,1), "cm"))
 plot(p_tree_urb)  
-ggsave("C:/Users/pakno/OneDrive - University of Toronto/GRF Bee/Figure/urb_tree.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
+ggsave("urb_tree.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
 
 library(ggpubr)
 
-write.csv(response_df,"C:/Users/pakno/OneDrive - University of Toronto/GRF Bee/Table/response_df.csv")
+write.csv(response_df,"Table/Genus_response_df.csv")
 ########correlation
 
 cor_df <- agr_response_df[!is.na(agr_response_df$Urb),]
@@ -380,4 +380,4 @@ plot(family_plot2)
 
 combined_plot <- ggarrange(family_plot1,family_plot2,common.legend=T,nrow=2,legend="bottom")
 plot(combined_plot)
-ggsave("C:/Users/pakno/OneDrive - University of Toronto/GRF Bee/Figure/bar_plot.tiff",height=10,width=10,compression="lzw",bg="white",dpi=600)
+ggsave("Figure/bar_plot.tiff",height=10,width=10,compression="lzw",bg="white",dpi=600)
