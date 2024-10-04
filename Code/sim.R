@@ -1,14 +1,14 @@
 library(lme4)
 library(lmerTest)
-set.seed(123)
+set.seed(1000)
 xi <- c(rep(0,10),rep(1,10))
-ci <<- c(1:154)
+ci <<- c(1:157)
 
 x <- expand.grid(xi,ci)
 
 b0=10
 b1=0
-missing_n <- 111
+missing_n <- 115
 
 result <- list()
 for (i in 1:1000) {
@@ -24,7 +24,7 @@ for (i in 1:1000) {
   m <- lmer(y~Var1+(Var1||Var2),data=x)
   summary(m)
   
-  missing_df <- data.frame(Var2=sample(1:154,missing_n),Var2_miss = sample(1,missing_n,replace=T))
+  missing_df <- data.frame(Var2=sample(1:157,missing_n),Var2_miss = sample(1,missing_n,replace=T))
   missing_df$label <- paste0(missing_df$Var2,"_",missing_df$Var2_miss)
   
   x$label <- paste0(x$Var2,"_",x$Var1)
