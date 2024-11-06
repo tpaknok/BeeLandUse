@@ -6,17 +6,17 @@ library(DHARMa)
 ### Gamma
 Beta_Gamma_df <- read.csv("Data/Cleaned_beta.csv")
 Beta_Gamma_df$LC <- relevel(factor(Beta_Gamma_df$LC,ordered=F),ref="Natural")
-RobustPCA <- rrcov::PcaCov(scale(data.frame(Beta_Gamma_df$SC.sd,log(Beta_Gamma_df$mean_SC))))
+RobustPCA <- rrcov::PcaCov(scale(data.frame(Beta_Gamma_df$SC.sd,log(Beta_Gamma_df$mean_SC)))) #log-transformed to handle non-linearities between SC and diversity
 Beta_Gamma_df$SC_PCA <- RobustPCA$scores[,1]
 Beta_Gamma_df$SC_PCA2 <- RobustPCA$scores[,2]
 
-m1full <- lmer(T.gamma~LC*scale(log(extent))+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
+m1full <- lmer(T.gamma~LC*log(extent)+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
              data=Beta_Gamma_df,
              weights=T.gamma.SC,
              REML=T)
 summary(m1full)
 anova(m1full)
-m1 <- lmer(T.gamma~LC+scale(log(extent))+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
+m1 <- lmer(T.gamma~LC+log(extent)+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
            data=Beta_Gamma_df,
            weights=T.gamma.SC,
            REML=T)
@@ -39,13 +39,13 @@ new_data <- data.frame(LC=c("Natural","Agriculture","Urban"),
                        site = mean(Beta_Gamma_df$site),
                        study=NA)
 
-m2full <- lmer(P.gamma~LC*scale(log(extent))+abundanceMethod+mean_PC1+mean_PC2++SamplingEffort.sd+log(site)+SC_PCA+(1|study),
+m2full <- lmer(P.gamma~LC*log(extent)+abundanceMethod+mean_PC1+mean_PC2++SamplingEffort.sd+log(site)+SC_PCA+(1|study),
              data=Beta_Gamma_df,
              weights=T.gamma.SC,
              REML=T)
 summary(m2full)
 anova(m2full)
-m2 <- lmer(P.gamma~LC+scale(log(extent))+abundanceMethod+mean_PC1+mean_PC2++SamplingEffort.sd+log(site)+SC_PCA+(1|study),
+m2 <- lmer(P.gamma~LC+log(extent)+abundanceMethod+mean_PC1+mean_PC2++SamplingEffort.sd+log(site)+SC_PCA+(1|study),
                data=Beta_Gamma_df,
                weights=T.gamma.SC,
                REML=T)
@@ -59,7 +59,7 @@ table_Pgamma <- anova(m2)
 rPgamma <-performance::r2(m2)
 table_Pgamma <- cbind(table_Pgamma,R2m=rPgamma$R2_marginal,R2c=rPgamma$R2_conditional)
 
-m3 <- lmer(log(P.gamma)~LC+scale(log(T.gamma))+LC+scale(log(extent))+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
+m3 <- lmer(log(P.gamma)~LC+log(T.gamma)+LC+log(extent)+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
                data=Beta_Gamma_df,
                weights=T.gamma.SC,
                REML=T)
@@ -80,13 +80,13 @@ write.csv(rbind(pair_comp_TD_gamma,pair_comp_PD_gamma),"Table/Gamma_table_pair_c
 Beta_Gamma_df$T_beta_AGP <- (Beta_Gamma_df$T.gamma)/(Beta_Gamma_df$mean_T_alpha)
 Beta_Gamma_df$Beta_Gamma_df_AGP <- (Beta_Gamma_df$P.gamma)/(Beta_Gamma_df$mean_P_alpha)
 
-m4full <- lmer(log(T_beta_AGP)~LC*scale(log(extent))+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
+m4full <- lmer(log(T_beta_AGP)~LC*log(extent)+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
            data=Beta_Gamma_df,
            weights=T.gamma.SC,
            REML=T)
 summary(m4full)
 anova(m4full)
-m4 <- lmer(log(T_beta_AGP)~LC+scale(log(extent))+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
+m4 <- lmer(log(T_beta_AGP)~LC+log(extent)+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
            data=Beta_Gamma_df,
            weights=T.gamma.SC,
            REML=T)
@@ -98,7 +98,7 @@ table_Tbeta <- anova(m4)
 rTbeta <-performance::r2(m4)
 table_Tbeta <- cbind(table_Tbeta,R2m=rTbeta$R2_marginal,R2c=rTbeta$R2_conditional)
 
-m5full <- lmer(log(Beta_Gamma_df_AGP)~LC*scale(log(extent))+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
+m5full <- lmer(log(Beta_Gamma_df_AGP)~LC*log(extent)+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
                data=Beta_Gamma_df,
                weights=T.gamma.SC,
                REML=T)
@@ -106,7 +106,7 @@ summary(m5full)
 plot(simulateResiduals(m5full))
 anova(m5full)
 
-m5 <- lmer(log(Beta_Gamma_df_AGP)~LC+scale(log(extent))+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
+m5 <- lmer(log(Beta_Gamma_df_AGP)~LC+log(extent)+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
            data=Beta_Gamma_df,
            weights=T.gamma.SC,
            REML=T)
@@ -117,7 +117,7 @@ table_Pbeta <- anova(m5)
 rPbeta <-performance::r2(m5)
 table_Pbeta <- cbind(table_Pbeta,R2m=rPbeta$R2_marginal,R2c=rPbeta$R2_conditional)
 
-m6 <- lmer(log(Beta_Gamma_df_AGP)~LC+scale(log(T_beta_AGP))+scale(log(extent))+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
+m6 <- lmer(log(Beta_Gamma_df_AGP)~LC+log(T_beta_AGP)+log(extent)+abundanceMethod+mean_PC1+mean_PC2+SamplingEffort.sd+log(site)+SC_PCA+(1|study),
            data=Beta_Gamma_df,
            weights=T.gamma.SC,
            REML=T)

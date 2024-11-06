@@ -228,7 +228,7 @@ p_tree_agr <- ggtree(pruned.tree.agr,layout="circular",ladderize=T,size=1.2,hang
   geom_tree(aes(color=trait),size=1)+
   scale_color_gradient2(high="#ca0020",mid="#ffffbf",low="#0571b0",trans="log10",breaks=c(0.1,0.3,1,3),midpoint=0,limits=c(0.06,6.6),name=expression(paste("Ratio (Agricultural or Urban / Natural)")))+
   new_scale_color()+
-  geom_tiplab(aes(colour=sig),fontface=3,align=T,linetype=NA, hjust = -0.05 ,show.legend=F,size=2.8)+
+  geom_tiplab(aes(colour=sig),fontface=3,align=T,linetype=NA, hjust = -0.05 ,show.legend=F,size=3.2)+
   scale_color_manual(values=c("black","#0571b0","red"))+
   theme(legend.text = element_text(size = 6), 
         legend.title = element_text(size =8), 
@@ -263,16 +263,31 @@ p_tree_urb <- ggtree(pruned.tree.urb,layout="circular",ladderize=T,size=1.2) %<+
   geom_tree(aes(colour=trait),size=1)+
   scale_color_gradient2(high="#ca0020",mid="#ffffbf",low="#0571b0",trans="log10",breaks=c(0.1,0.3,1,3),limits=c(0.07,6.5),name=expression(paste("Ratio (Agricultural or Urban / Natural)")))+
   new_scale_color()+
-  geom_tiplab(aes(colour=sig),fontface=3,align=T,linetype=NA, hjust = -0.05 ,show.legend=F,size=2.8)+
+  geom_tiplab(aes(colour=sig),fontface=3,align=T,linetype=NA, hjust = -0.05 ,show.legend=F,size=3.2)+
+  scale_color_manual(values=c("black","#0571b0","red"))+
+  theme(legend.text = element_text(size = 8), 
+        legend.title = element_text(size = 8), 
+        legend.key.size = unit(0.5, 'cm'),
+        legend.position="none",
+        legend.box.spacing= unit(-1, 'cm'),
+        plot.margin = unit(c(1,1,1,1), "cm"))
+plot(p_tree_urb)  
+ggsave("C:/Users/pakno/OneDrive - University of Toronto/GRF Bee/Figure/urb_tree.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
+
+p_tree_urb1 <- ggtree(pruned.tree.urb,layout="circular",ladderize=T,size=1.2) %<+% urb_response_df_tree+
+  geom_tree(aes(colour=trait),size=1)+
+  scale_color_gradient2(high="#ca0020",mid="#ffffbf",low="#0571b0",trans="log10",breaks=c(0.1,0.3,1,3),limits=c(0.07,6.5),name=expression(paste("Ratio (Agricultural or Urban / Natural)")))+
+  new_scale_color()+
+  geom_tiplab(aes(colour=sig),fontface=3,align=T,linetype=NA, hjust = -0.05 ,show.legend=F,size=3.2)+
   scale_color_manual(values=c("black","#0571b0","red"))+
   theme(legend.text = element_text(size = 8), 
         legend.title = element_text(size = 8), 
         legend.key.size = unit(0.5, 'cm'),
         legend.position="bottom",
-        legend.box.spacing= unit(0, 'cm'),
-        plot.margin = unit(c(1,1,1,1), "cm"))
-plot(p_tree_urb)  
-ggsave("urb_tree.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
+        legend.box.spacing= unit(-1, 'cm'),
+        plot.margin = unit(c(1,1,1,1), "cm")) #crop the heat bar and merge the plots in powerpoint
+plot(p_tree_urb1)  
+ggsave("Figure/urb_tree_with_legend.tiff",height=6,width=6,compression="lzw",bg="white",dpi=600)
 
 library(ggpubr)
 

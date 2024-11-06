@@ -169,14 +169,14 @@ Lat_df_plot <- rbind(Lat_df,study_df_Lat)
 plot_density <- ggplot(Lat_df_plot,aes(x=Lat,linetype=type))+
   geom_density()+
   xlab("Latitude")+
-  ylab("Density (Assemblages)")+
+  ylab("Density")+
   theme_classic()+
   ylim(0,0.04)+
   theme(axis.text = element_text(size=12),
         axis.title = element_text(size=12),
         strip.text = element_text(hjust = 0,size=12),
         strip.background = element_blank(),
-        legend.position="none")
+        legend.position="none") # a plot with 1) assemblage and 2) study density. not included in the manuscript
 
 
 plot(plot_density)
@@ -194,23 +194,6 @@ plot_density <- ggplot(analysis.df.PD,aes(x=Lat))+
         legend.position="none")
 
 
-plot(plot_density)
+plot(plot_density) #we used this in Fig. 1
 
 ggsave("Figure/density.tiff",width=2,height=2,compression="lzw",dpi=600)
-
-plot_density2 <- ggplot(analysis.df.PD[!duplicated(analysis.df.PD$studyID),],aes(x=Lat))+
-  geom_density()+
-  xlab("Latitude")+
-  ylab("Study density")+
-  theme_classic()+
-  ylim(0,0.025)+
-  theme(axis.text = element_text(size=12),
-        axis.title = element_text(size=12),
-        strip.text = element_text(hjust = 0,size=12),
-        strip.background = element_blank(),
-        legend.position="none")
-
-plot(plot_density2)
-
-ggsave("Figure/density.tiff",width=2,height=2,compression="lzw",dpi=600)
-
