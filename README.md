@@ -2,8 +2,8 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 This is a repository for the manuscript Tsang et al. (Submitted). Some
-datasets are private thus were not uploaded here. Please refer to
-supplementary table S3 of the manuscript and contact the data owners for
+datasets are private thus were not uploaded here (and therefore the numbers will be a bit different from the main text). Please refer to
+supplementary table S1 of the manuscript and contact the data owners for
 the data.
 
 Code required to analyze the diversity data has been uploaded, but note
@@ -15,7 +15,7 @@ cleaned_genus.csv
 
 ## Code
 
-In the code folder, there are 5 scripts. Please run the scripts in
+In the code folder, there are 7 scripts. Four are crucial for the actual analyses. Please run the scripts in
 numerical order
 
 | Script            | Description                                                                 |
@@ -24,7 +24,8 @@ numerical order
 | 2_Beta_and_Gamma  | Beta and gamma diversity analyses                                           |
 | 3_Diversity_graph | Making graphs presenting diversity changes across land uses (Fig.1 and 2)   |
 | 4_Genus           | Genus analyses (including graphs)                                           |
-| sim               | Simulations about mixed models (Text S2)                                    |
+| cleaning_before_release | Removing private datasets                                             |
+| sim               | Simulations about mixed models (Section S5)                                 |
 | get_R2            | get R2 from spaMM . Based on the r2() function in the R package performance |
 
 ## Alpha diversity analyses
@@ -88,5 +89,5 @@ Please use the Cleaned_genus.csv for these analyses.
 | SamplingEffort   | Sampling effort at the site                      |
 | PC1              | Climatic PC1 score                               |
 | PC2              | Climatic PC2 score                               |
-| LC.author.coarse | Land use change (single column                   |
+| LC.author.coarse | Land use change (single column)                  |
 | orig.value       | same as abundance value                          |
