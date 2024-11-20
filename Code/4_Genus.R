@@ -111,14 +111,12 @@ for (j in 1:length(unique(sp.long.df$genus))) {
     newdata$predicted_y <- as.numeric(predict(mod_genus,newdata=newdata,re.form=NA,type="response"))
     newdata$predicted_y_link <- as.numeric(predict(mod_genus,newdata=newdata,re.form=NA,type="link"))
   
-    newdata <- cbind(newdata,get_intervals(object=mod_genus,newdata=newdata,level=0.95,re.form=NA,type="link"),get_intervals(object=mod_genus,newdata=newdata,level=0.68,re.form=NA,type="link"))
+    newdata <- cbind(newdata,get_intervals(object=mod_genus,newdata=newdata,level=0.95,re.form=NA,type="response"),get_intervals(object=mod_genus,newdata=newdata,level=0.68,re.form=NA,type="response"))
     newdata$indicator <- 0
     newdata$LC <- c("Natural",unique(LC.available))
     natural_ref <- c(newdata[newdata$LC == "Natural","predicted_y"])
     newdata$ratio_mean <- newdata$predicted_y/natural_ref
-    newdata$ratio_low <- newdata$predVar_0.025/natural_ref
-    newdata$ratio_high <- newdata$predVar_0.975/natural_ref
-    
+
     newdata$Taxa = unique(sp.long.df$genus)[[j]]
     
     plot_df <- rbind(plot_df,newdata)
@@ -168,13 +166,11 @@ response_df$adjusted_p_urb <- p.adjust(response_df$Urb_p,"fdr")
 
 response_plot_df_agr <- subset(plot_df,LC.author.coarse == "Agriculture")
 response_df$ratio_mean_agr <- response_plot_df_agr[match(response_df$Taxa,response_plot_df_agr$Taxa),"ratio_mean"]
-response_df$log_ratio_mean_agr <- log10(response_df$ratio_mean_agr)
-response_df$ratio_propoagated_se_agr <- response_plot_df_agr[match(response_df$Taxa,response_plot_df_agr$Taxa),"ratio_propoagated_se2"]
-  
+response_df$log_ratio_mean_agr <- log(response_df$ratio_mean_agr)
+
 response_plot_df_urb <- subset(plot_df,LC.author.coarse == "Urban")
 response_df$ratio_mean_urb <- response_plot_df_urb[match(response_df$Taxa,response_plot_df_urb$Taxa),"ratio_mean"]
-response_df$log_ratio_mean_urb <- log10(response_df$ratio_mean_urb)
-response_df$ratio_propoagated_se_urb <- response_plot_df_urb[match(response_df$Taxa,response_plot_df_urb$Taxa),"ratio_propoagated_se2"]
+response_df$log_ratio_mean_urb <- log(response_df$ratio_mean_urb)
 
 agr_response_df <- response_df[!is.na(response_df$log_ratio_mean_agr),]
 
