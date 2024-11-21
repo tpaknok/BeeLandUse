@@ -33,8 +33,9 @@ for (j in 1:length(unique(sp.long.df$genus))) {
   LC.available <- c(length(unique.study.nat),length(unique.study.agr),length(unique.study.urb))
   names(LC.available) <- c("Natural","Agriculture","Urban")
   LC.available <- LC.available[LC.available >= 5]
+  sp.long.df.subset <- sp.long.df.subset[sp.long.df.subset$LC.author.coarse %in% names(LC.available),]
   
-  if (length(LC.available) <= 1 | (!("Natural" %in% names(LC.available))) | length(unique.study) < 5) {
+  if (length(LC.available) <= 1 | !("Natural" %in% names(LC.available)) | length(unique.study) < 5) {
     message("Genus ",unique(sp.long.df$genus)[[j]]," not analyzed")
     response <- data.frame(Taxa = unique(sp.long.df$genus)[[j]],
                            Mean = mean(sp.long.df.subset$value),
@@ -51,6 +52,7 @@ for (j in 1:length(unique(sp.long.df$genus))) {
     form=4
   } else {
     Natural.pos <- which(names(LC.available) == "Natural")
+    sp.long.df.subset$LC.author.coarse <- relevel(as.factor(sp.long.df.subset$LC.author.coarse), ref="Natural")
     
     if (is_empty(Natural.pos)) {
       LC.available <- LC.available
@@ -67,11 +69,11 @@ for (j in 1:length(unique(sp.long.df$genus))) {
     } 
     
     if (length(unique(sp.long.df.subset$abundanceMethod)) == 1) {
-    formula <- paste0("value~LC.author.coarse+PC1+PC2+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)")
-    form = 2
+      formula <- paste0("value~LC.author.coarse+PC1+PC2+offset(log(SamplingEffort))+(",RHS,"||studyID)+Matern(1|Long+Lat %in% studyID)")
+      form = 2
     }
-
-        sp.long.df.subset$PC1 <- scale(sp.long.df.subset$PC1)
+    
+    sp.long.df.subset$PC1 <- scale(sp.long.df.subset$PC1)
     sp.long.df.subset$PC2 <- scale(sp.long.df.subset$PC2)
     
     start <- Sys.time()
@@ -81,20 +83,20 @@ for (j in 1:length(unique(sp.long.df$genus))) {
     
     aov_table <- NA
     if (length(unique(LC.available)) == 2) {
-    aov_table <- anova(mod_genus,method="t-Chisq")
-    
-    p_df <- c(NA,NA)
-    names(p_df) <- c("LC.author.coarseAgriculture","LC.author.coarseUrban")
-    if (aov_table$`Pr(>Chisq.)`[2] < 0.05) {
-      sp.long.df.subset$LC.author.coarse1 <- relevel(sp.long.df.subset$LC.author.coarse,"Agriculture")
-      mod_genus1 <- try(fitme(value~LC.author.coarse1+PC1+PC2+offset(log(SamplingEffort))+(Natural+Urban||studyID)+Matern(1|Long+Lat %in% studyID),
-                              data=sp.long.df.subset,
-                              family=negbin,
-                              method="ML",
-                              verbose=c(TRACE=TRUE),
-                              control.dist=list(dist.method="Earth")))
+      aov_table <- anova(mod_genus,method="t-Chisq")
       
-      p_df <- p.adjust(c(b_table[2:3,4],summary(mod_genus1,details=T,verbose=F)$beta_table[3,4]),"fdr")
+      p_df <- c(NA,NA)
+      names(p_df) <- c("LC.author.coarseAgriculture","LC.author.coarseUrban")
+      if (aov_table$`Pr(>Chisq.)`[2] < 0.05) {
+        sp.long.df.subset$LC.author.coarse1 <- relevel(sp.long.df.subset$LC.author.coarse,"Agriculture")
+        mod_genus1 <- try(fitme(value~LC.author.coarse1+PC1+PC2+offset(log(SamplingEffort))+(Natural+Urban||studyID)+Matern(1|Long+Lat %in% studyID),
+                                data=sp.long.df.subset,
+                                family=negbin,
+                                method="ML",
+                                verbose=c(TRACE=TRUE),
+                                control.dist=list(dist.method="Earth")))
+        
+        p_df <- p.adjust(c(b_table[2:3,4],summary(mod_genus1,details=T,verbose=F)$beta_table[3,4]),"fdr")
       }
     } else {
       p_df <- b_table[2,4]
@@ -102,7 +104,8 @@ for (j in 1:length(unique(sp.long.df$genus))) {
     }
     
     newdata = expand.grid(LC.author.coarse=c("Natural","Agriculture","Urban"),abundanceMethod="Abundance",PC1=mean(sp.long.df.subset$PC1),PC2=mean(sp.long.df.subset$PC2),SamplingEffort=1)
-
+    #newdata = newdata[!(newdata$Agriculture == 1 & newdata$Urban == 1),]
+    
     if (!"Urban" %in% LC.available) 
       newdata = subset(newdata,LC.author.coarse != "Urban")
     if (!"Agriculture" %in% LC.available) 
@@ -110,18 +113,31 @@ for (j in 1:length(unique(sp.long.df$genus))) {
     
     newdata$predicted_y <- as.numeric(predict(mod_genus,newdata=newdata,re.form=NA,type="response"))
     newdata$predicted_y_link <- as.numeric(predict(mod_genus,newdata=newdata,re.form=NA,type="link"))
-  
+    
     newdata <- cbind(newdata,get_intervals(object=mod_genus,newdata=newdata,level=0.95,re.form=NA,type="response"),get_intervals(object=mod_genus,newdata=newdata,level=0.68,re.form=NA,type="response"))
     newdata$indicator <- 0
+    #newdata[,c("predicted_y","predVar_0.025","predVar_0.975")] <- 10^newdata[,c("predicted_y","predVar_0.025","predVar_0.975")]-const
+    #if (length(which(newdata[,c("predicted_y","predVar_0.025","predVar_0.975")] < 0)) > 0) {
+    # newdata[,c("predicted_y","predVar_0.025","predVar_0.975")][newdata[,c("predicted_y","predVar_0.025","predVar_0.975")] < 0] <- 0
+    #newdata$indicator <- 1
+    #}
     newdata$LC <- c("Natural",unique(LC.available))
     natural_ref <- c(newdata[newdata$LC == "Natural","predicted_y"])
     newdata$ratio_mean <- newdata$predicted_y/natural_ref
-
+    #newdata$ratio_se <- newdata$predicted_y_link-newdata$predVar_0.16 #mean-low 84CI = SE?
+    #newdata$ratio_propoagated_se1 <- newdata$ratio_se+newdata$ratio_se[1]
+    #newdata$ratio_propoagated_se2 <- sqrt(newdata$ratio_se^2+newdata$ratio_se[1]^2)
+    # newdata$ratio_low <- newdata$predVar_0.025/natural_ref
+    # newdata$ratio_high <- newdata$predVar_0.975/natural_ref
+    # 
     newdata$Taxa = unique(sp.long.df$genus)[[j]]
     
     plot_df <- rbind(plot_df,newdata)
-
-        if (is.error(mod_genus)){
+    #newX <- expand.grid(unique(sp.long.df.subset$abundanceMethod),unique(sp.long.df.subset$Agriculture),unique(sp.long.df.subset$Urban))
+    #newX <- newX[!(newX$Var2 == 1 & newX$Var3 == 1),]
+    #newX <- cbind(newX,mean(sp.long.df.subset$m))
+    #predict(mod_genus,newdata=data.frame(Agriculture=c(0,1,PC1=0,PC2=0),re.form=NA)
+    if (is.error(mod_genus)){
       message("error model")
       response <- data.frame(Taxa = unique(sp.long.df.subset$genus)[[j]],
                              Mean = mean(sp.long.df.subset$value),
@@ -199,7 +215,7 @@ library(ggtree)
 library(ggnewscale)
 
 agr_response_df$sig <- ifelse(agr_response_df$adjusted_p_agr< 0.05,"sig","insig")
-urb_response_df$sig <- ifelse(urb_response_df$adjusted_p_Urb < 0.05,"sig","insig")
+urb_response_df$sig <- ifelse(urb_response_df$adjusted_p_urb < 0.05,"sig","insig")
 
 pruned.tree.agr <- drop.tip(tree,tip=tree$tip.label[!tree$tip.label %in% agr_response_df$Taxa])
 sig_gen <- agr_response_df$Taxa[agr_response_df$sig == "sig"]
@@ -297,9 +313,9 @@ library(phyr)
 cor_phylo(variates=~log_ratio_mean_urb+log_ratio_mean_agr,
           data=cor_df,
           phy=pruned_genus_tree,
-          genus=cor_df$Taxa)
+          species=cor_df$Taxa) #control phylo
 
-cor(cor_df$log_ratio_mean_agr,cor_df$log_ratio_mean_urb)
+cor(cor_df$log_ratio_mean_agr,cor_df$log_ratio_mean_urb) #not controlling phylo
 
 ###bar plot for figure S2
 
@@ -317,7 +333,7 @@ barplot_df$Simp_Taxa[barplot_df$Taxa == "Anthidium"] <- "Ant1"
 barplot_df$Simp_Taxa[barplot_df$Taxa == "Anthophora"] <- "Ant2"
 
 barplot_df$Simp_Taxa[barplot_df$Taxa == "Melitta"] <- "Mel3"
-  barplot_df$Simp_Taxa[barplot_df$Taxa == "Melissodes"] <- "Mel2"
+barplot_df$Simp_Taxa[barplot_df$Taxa == "Melissodes"] <- "Mel2"
 barplot_df$Simp_Taxa[barplot_df$Taxa == "Melipona"] <- "Mel1"
 
 barplot_df$Simp_Taxa[barplot_df$Taxa == "Nomia"] <- "Nom2"
@@ -336,13 +352,15 @@ urb_na_genus <- barplot_df[is.na(barplot_df$log_ratio),"Simp_Taxa"]
 barplot_df$label_colour <- barplot_df$Simp_Taxa %in% urb_na_genus 
 
 family_plot1 <- ggplot(data=subset(barplot_df,Family=="Apidae" | Family == "Andrenidae"),aes(x=Simp_Taxa,y=log_ratio))+
-  expand_limits(y=-1.35)+
+  expand_limits(y=-2.8)+
   geom_bar(aes(fill=LC),stat="identity",position = "dodge2")+
-  geom_text(aes(colour=label_colour,label=Simp_Taxa),y=-1.25,vjust=0.7,angle = 20,size=3.5)+
+  geom_text(aes(colour=label_colour,label=Simp_Taxa),y=-2.85,vjust=0.7,angle = 20,size=3.5)+
   geom_hline(yintercept=0)+
-  geom_hline(yintercept=-1.2)+
-  geom_segment(aes(x=0, y=0.75, xend=0, yend=-1.20))+
+  geom_hline(yintercept=-2.7)+
+  geom_text(aes(label=sig,y=ifelse(log_ratio > 0, log_ratio+0.1,log_ratio-0.2)),position=position_dodge2(width = .9),size=6)+
+  geom_segment(aes(x=0, y=1.5, xend=0, yend=-2.7))+
   scale_colour_manual(values=c("black","blue"),guide=F)+
+  scale_y_continuous(breaks=c(-2,-1,0,1))+
   scale_fill_manual(values=c("darkgoldenrod2","grey25"),name = "Land use")+
   facet_grid(.~Family,scales="free_x",space="free")+
   ylab("Log ratio")+
@@ -363,13 +381,15 @@ family_plot1 <- ggplot(data=subset(barplot_df,Family=="Apidae" | Family == "Andr
 plot(family_plot1)
 
 family_plot2 <- ggplot(data=subset(barplot_df,Family!="Apidae" & Family != "Andrenidae"),aes(x=Simp_Taxa,y=log_ratio))+
-  expand_limits(y=-1.35)+
+  expand_limits(y=-2.8)+
   geom_bar(aes(fill=LC),stat="identity",position = "dodge2")+
-  geom_text(aes(colour=label_colour,label=Simp_Taxa),y=-1.25,vjust=0.7,angle = 20,size=3.5)+
+  geom_text(aes(colour=label_colour,label=Simp_Taxa),y=-2.85,vjust=0.7,angle = 20,size=3.5)+
   geom_hline(yintercept=0)+
-  geom_hline(yintercept=-1.2)+
-  geom_segment(aes(x=0, y=0.75, xend=0, yend=-1.20))+
+  geom_hline(yintercept=-2.7)+
+  geom_text(aes(label=sig,y=ifelse(log_ratio > 0, log_ratio+0.1,log_ratio-0.2)),position=position_dodge2(width = .9),size=6)+
+  geom_segment(aes(x=0, y=1.5, xend=0, yend=-2.7))+
   scale_colour_manual(values=c("black","blue"),guide=F)+
+  scale_y_continuous(breaks=c(-2,-1,0,1))+
   scale_fill_manual(values=c("darkgoldenrod2","grey25"),name = "Land use")+
   facet_grid(.~Family,scales="free_x",space="free")+
   ylab("Log ratio")+
