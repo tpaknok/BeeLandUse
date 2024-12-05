@@ -58,7 +58,7 @@ diversity is computed in the script (Gamma/Alpha).
 |-------------------|------------------------------------------------------------|
 | study             | Study identity                                             |
 | T.gamma           | Taxonomic gamma diversity                                  |
-| T.gamma.SC        | Phylogenetic gamma diversity                               |
+| T.gamma.SC        | Taxonomic gamma diversity sampling completeness            |
 | P.gamma           | Phylogenetic gamma diversity                               |
 | LC                | Land use (Natural/Agricultural/Urban)                      |
 | extent            | Study extent                                               |
