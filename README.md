@@ -24,7 +24,7 @@ numerical order
 | 2_Beta_and_Gamma  | Beta and gamma diversity analyses                                           |
 | 3_Diversity_graph | Making graphs presenting diversity changes across land uses (Fig.1 and 2)   |
 | 4_Genus           | Genus analyses (including graphs)                                           |
-| cleaning_before_release | Removing private datasets and clean data. This doesn't need to be run before running script 1-4 |
+| cleaning_before_release | Clean data. This doesn't need to be run before running script 1-4 |
 | sim               | Simulations about mixed models (Section S5)                                 |
 | get_R2            | get R2 from spaMM . Based on the r2() function in the R package performance |
 
