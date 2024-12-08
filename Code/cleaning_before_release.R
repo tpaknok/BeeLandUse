@@ -2,7 +2,7 @@ Alpha <- read.csv("Data/Alpha.csv")
 Beta <- read.csv("Data/Beta.csv")
 Genus <- read.csv("Data/Genus.csv")
 
-exclude <- c("Guti01","Land01","Liuy01","Liuy02","otie01")
+exclude <- NULL
 
 library(tidyverse)
 
