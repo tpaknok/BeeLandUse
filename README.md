@@ -26,7 +26,7 @@ numerical order
 | 4_Genus           | Genus analyses (including graphs)                                           |
 | cleaning_before_release | Clean data. This doesn't need to be run before running script 1-4 |
 | sim               | Simulations about mixed models (Section S5)                                 |
-| get_R2            | get R2 from spaMM . Based on the r2() function in the R package performance |
+| get_R2            | get R2 from spaMM . Based on the r2() function in the R package performance. Note that the function is specifically designed for the models in the paper and might not be suitable for general uses. |
 
 ## Alpha diversity analyses
 
